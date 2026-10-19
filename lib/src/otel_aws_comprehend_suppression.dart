@@ -5,12 +5,15 @@ import 'dart:async';
 
 const Symbol _suppressKey = #dartastic_otel_libs_aws_comprehend_suppress;
 
+/// Whether instrumentation is suppressed in the current zone.
 bool awsComprehendInstrumentationSuppressed() =>
     Zone.current[_suppressKey] == true;
 
+/// Runs [body] without creating spans for calls made inside it.
 T runWithoutAwsComprehendInstrumentation<T>(T Function() body) =>
     runZoned(body, zoneValues: {_suppressKey: true});
 
+/// Runs [body] without creating spans for calls made inside it.
 Future<T> runWithoutAwsComprehendInstrumentationAsync<T>(
   Future<T> Function() body,
 ) =>

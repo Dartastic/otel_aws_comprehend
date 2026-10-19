@@ -10,6 +10,7 @@ const _tracerName = 'dartastic_otel_libs_aws_comprehend';
 APITracer _tracer() => OTelAPI.tracerProvider().getTracer(_tracerName);
 
 class AwsComprehendResult {
+  /// Creates a result.
   const AwsComprehendResult({
     this.charactersProcessed,
     this.languageCode,
@@ -39,8 +40,13 @@ class AwsComprehendResult {
   final int? piiEntityCount;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class AwsComprehendCallResult<T> {
+  /// Creates a call result.
   const AwsComprehendCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final AwsComprehendResult? result;
 }
