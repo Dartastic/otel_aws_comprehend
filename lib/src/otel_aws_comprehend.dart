@@ -1,15 +1,16 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_aws_comprehend_suppression.dart';
 
 const _tracerName = 'dartastic_otel_libs_aws_comprehend';
 
-Tracer _tracer() => OTel.tracerProvider().getTracer(_tracerName);
+APITracer _tracer() => OTelAPI.tracerProvider().getTracer(_tracerName);
 
 class AwsComprehendResult {
+  /// Creates a result.
   const AwsComprehendResult({
     this.charactersProcessed,
     this.languageCode,
@@ -39,8 +40,13 @@ class AwsComprehendResult {
   final int? piiEntityCount;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class AwsComprehendCallResult<T> {
+  /// Creates a call result.
   const AwsComprehendCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final AwsComprehendResult? result;
 }
@@ -72,79 +78,79 @@ Future<T> tracedAwsComprehend<T>({
   final span = _tracer().startSpan(
     'comprehend $operation',
     kind: SpanKind.client,
-    attributes: OTel.attributesFromMap(m),
+    attributes: OTelAPI.attributesFromMap(m),
   );
   try {
     final r = await invoke();
     if (r.result != null) {
       final extras = <Attribute<Object>>[];
       if (r.result!.charactersProcessed != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'aws.comprehend.characters_processed',
           r.result!.charactersProcessed!,
         ));
       }
       if (r.result!.languageCode != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'aws.comprehend.response.language_code',
           r.result!.languageCode!,
         ));
       }
       if (r.result!.sentiment != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'aws.comprehend.sentiment',
           r.result!.sentiment!,
         ));
       }
       if (r.result!.sentimentPositive != null) {
-        extras.add(OTel.attributeDouble(
+        extras.add(OTelAPI.attributeDouble(
           'aws.comprehend.sentiment.positive',
           r.result!.sentimentPositive!,
         ));
       }
       if (r.result!.sentimentNegative != null) {
-        extras.add(OTel.attributeDouble(
+        extras.add(OTelAPI.attributeDouble(
           'aws.comprehend.sentiment.negative',
           r.result!.sentimentNegative!,
         ));
       }
       if (r.result!.sentimentNeutral != null) {
-        extras.add(OTel.attributeDouble(
+        extras.add(OTelAPI.attributeDouble(
           'aws.comprehend.sentiment.neutral',
           r.result!.sentimentNeutral!,
         ));
       }
       if (r.result!.sentimentMixed != null) {
-        extras.add(OTel.attributeDouble(
+        extras.add(OTelAPI.attributeDouble(
           'aws.comprehend.sentiment.mixed',
           r.result!.sentimentMixed!,
         ));
       }
       if (r.result!.entityCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'aws.comprehend.entity_count',
           r.result!.entityCount!,
         ));
       }
       if (r.result!.keyPhraseCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'aws.comprehend.key_phrase_count',
           r.result!.keyPhraseCount!,
         ));
       }
       if (r.result!.piiEntityCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'aws.comprehend.pii_entity_count',
           r.result!.piiEntityCount!,
         ));
       }
-      if (extras.isNotEmpty) span.addAttributes(OTel.attributes(extras));
+      if (extras.isNotEmpty) span.addAttributes(OTelAPI.attributes(extras));
     }
     return r.value;
   } catch (e, st) {
-    span.addAttributes(OTel.attributes([
-      OTel.attributeString(
-        ErrorResource.errorType.key,
+    span.addAttributes(OTelAPI.attributes([
+      OTelAPI.attributeString(
+        ErrorAttributes.errorType.key,
         e.runtimeType.toString(),
       ),
     ]));
